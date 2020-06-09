@@ -141,6 +141,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SetContextInject.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SetContextInject.h" />
+    <ClInclude Include="StdAfx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ShellCode.asm" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
