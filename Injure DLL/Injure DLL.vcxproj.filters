@@ -31,8 +31,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ShellCode.asm">
+    <CustomBuild Include="ShellCode.asm">
       <Filter>源文件</Filter>
-    </None>
+    </CustomBuild>
   </ItemGroup>
 </Project>
