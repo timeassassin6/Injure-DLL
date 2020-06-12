@@ -7,15 +7,6 @@ VOID ShellCodeFun(VOID);
 #endif
 VOID PrepareShellCode(BYTE* pShellCode);
 
-typedef struct _DATA_SHELLCODE //声明存放shellcode的结构体
-{
-	BYTE shellcode[0x30];//调用LoadLibrary加载Dll的shellcode
-	ULONG_PTR addrofLoadlibraryA;//目标进程中Loadlibrary的函数地址
-	PBYTE lpdllpath;//待注入DLL路径在目标进程中的指针
-	ULONG_PTR ori_rip;//注入完成后需要跳转的位置，目标程序正常执行应该执行的位置
-	CHAR DllPath[MAX_PATH];//待注入DLL路径
-}INJECT_DATA;
-
 HMODULE GetModuleHandleInProcess(SIZE_T pid, const char* ModuleName)
 {
 	HMODULE ModuleArray[1024];
@@ -50,7 +41,7 @@ HMODULE GetModuleHandleInProcess(SIZE_T pid, const char* ModuleName)
 		printf("%s\n", lpBaseName);
 		//printf("%s\n", (const char*)lpBaseName);
 		//printf("%s\n", ModuleName);
-		/*cout << lpBaseName << endl; */                                            
+		/*cout << lpBaseName << endl; */
 		if (strcmp((const char*)lpBaseName, ModuleName)==0)
 		{
 			CloseHandle(hProcess);
@@ -151,7 +142,7 @@ BOOL InjectDllToProcessBySetContext(SIZE_T pid, char* szDllFullPath)
 		}
 			   		
 		//在目标进程中申请存放Shellcode的内存
-		lpData = (PBYTE)VirtualAllocEx(hProcess, NULL, 1000, MEM_COMMIT, PAGE_READWRITE);
+		lpData = (PBYTE)VirtualAllocEx(hProcess, NULL, 1000, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 		if (lpData == NULL)
 		{
 			printf("[-] 在目标进程申请内存失败!\n");
@@ -184,7 +175,7 @@ BOOL InjectDllToProcessBySetContext(SIZE_T pid, char* szDllFullPath)
 		//重新设置Context,激活暂停的线程
 		if (!SetThreadContext(hThread, &context))
 		{
-			printf("[-] 无法设置线程 %d 的Context!\n", TidTable[count]);
+			printf("[-] 无法设置线程 %d 的Context!Errcode:%d\n", TidTable[count],GetLastError());
 			CloseHandle(hThread);
 			continue;
 		}
@@ -197,7 +188,7 @@ BOOL InjectDllToProcessBySetContext(SIZE_T pid, char* szDllFullPath)
 			continue;
 		}		
 		CloseHandle(hThread);
-		SleepEx(1000, NULL);
+		SleepEx(10000, NULL);
 	}
 	CloseHandle(hProcess);
 	printf("[*] 操作全部完毕.\n");
